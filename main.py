@@ -18,7 +18,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QApplication, 
 
 
 # playsound("sound/pukane-4.mp3")
-class FlagMaker(QMainWindow):
+class Translator(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -59,8 +59,12 @@ class FlagMaker(QMainWindow):
             print(ValueError)
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key.Key_M:
-            self.statusBar().showMessage(*self.logs)
+        try:
+            if event.key() == Qt.Key.Key_M:
+                self.statusBar().showMessage(*self.logs)
+        except Exception:
+            print('ОШИБКА КОНСОЛИ НЕВОЗМОЖНО')
+            self.statusBar().showMessage('ОШИБКА КОНСОЛИ НЕВОЗМОЖНО')
 
     def starter(self):
         try:
@@ -114,60 +118,54 @@ WHERE id = {id + 1}""").fetchall()
         API_KEY = 'ключ'
         URL = 'https://translate.api.cloud.yandex.net/translate/v2/translate'
         print(self.inputText.toPlainText().split('\n'))
-        trans = 'ru-ru'
+        transIn = 'ru'
+        target_language = 'en'
         try:
             if self.lan1.currentText() == 'Англиский':
-                trans = 'en' + trans[2:]
+                transIn = 'en'
             elif self.lan1.currentText() == 'Немецкий':
-                trans = 'de' + trans[2:]
+                transIn = 'de'
             elif self.lan1.currentText() == 'Французкий':
-                trans = 'fr' + trans[2:]
+                transIn = 'fr'
             elif self.lan1.currentText() == 'Белорусский':
-                trans = 'be' + trans[2:]
+                transIn = 'be'
             elif self.lan1.currentText() == 'Русский':
-                trans = 'ru' + trans[2:]
+                transIn = 'ru'
         except ValueError as e:
             self.logs.append('ошибка lan 1')
             print('ошибка lan 1')
 
         try:
             if self.lan2.currentText() == 'Англиский':
-                trans = trans[:-2] + 'en'
+                target_language = 'en'
             elif self.lan2.currentText() == 'Немецкий':
-                trans = trans[:-2] + 'de'
+                target_language = 'de'
             elif self.lan2.currentText() == 'Французкий':
-                trans = trans[:-2] + 'fr'
+                target_language = 'fr'
             elif self.lan2.currentText() == 'Белорусский':
-                trans = trans[:-2] + 'be'
+                target_language = 'be'
             elif self.lan2.currentText() == 'Русский':
-                trans = trans[:-2] + 'ru'
+                target_language = 'ru'
         except ValueError as e:
             self.logs.append('ошибка lan 2')
             print('ошибка lan 2')
         text_to_translate = self.inputText.toPlainText()
-        IAM_TOKEN = 't1.9euelZqKjZyZlI7PjZeKiYmWk5rHx-3rnpWai4rKzpOclJLKyZvGzZSbk47l8_dDN2NF-e8iJlV9_d3z9wNmYEX57yImVX39zef1656VmsbJipzOjMyJmpWJyMyWipuL7_zF656VmsbJipzOjMyJmpWJyMyWipuL.z6dTcv0DeQA16ta47r61tJumxeEN-C6sx7yE7rdMl-y9nvbu8qJxuZFUIZn3-dVWwUhu8yFfhD5aqgHyRGnICw'
+        IAM_TOKEN = 't1.9euelZqYlsyeisuWkcbMi8-NncqMy-3rnpWai4rKzpOclJLKyZvGzZSbk47l8_d7fl1F-e8ILHgB_t3z9zstW0X57wgseAH-zef1656VmpyKiZ7OnI2PlcjLx5ySy8aY7_zF656VmpyKiZ7OnI2PlcjLx5ySy8aY.WARfVyjNwf7IJ9nUPeTahCTQxzt7EfCQpIop4vvQmyCFqtGYIkkkBUKFNI32T4vdNVrOoRYN9WSinlrLBSerDg'
         folder_id = 'b1g50fq74ab4fhhng89n'
-        target_language = 'en'
-        texts = ["Hello", "World"]
-
-
         body = {
             "targetLanguageCode": target_language,
             "texts": text_to_translate,
             "folderId": folder_id,
         }
-
         headers = {
             "Content-Type": "application/json",
             "Authorization": "Bearer {0}".format(IAM_TOKEN)
         }
         self.zapros(headers=headers, body=body)
-
         # response = requests.post('https://translate.api.cloud.yandex.net/translate/v2/translate',
         #                          json=body,
         #                          headers=headers
         #                          )
-
         try:
             sound = pyglet.media.load('sound/pukane-4.mp3', streaming=False)
             sound.play()
@@ -185,6 +183,7 @@ WHERE id = {id + 1}""").fetchall()
                 data = json.loads(text_inp)  # Преобразование строки JSON в словарь Python
                 text_value = data["translations"][0]["text"]  # Получение значения text
                 self.updeter_bd(self.id)
+                self.outputText.setText(text_value)
                 print(text_value)
                 try:
                     sound = pyglet.media.load('sound/translate_true.mp3', streaming=False)
@@ -204,7 +203,7 @@ WHERE id = {id + 1}""").fetchall()
         except ValueError:
             try:
                 try:  # ошибка в body
-                    IAM_TOKEN = 't1.9euelZqKjZyZlI7PjZeKiYmWk5rHx-3rnpWai4rKzpOclJLKyZvGzZSbk47l8_dDN2NF-e8iJlV9_d3z9wNmYEX57yImVX39zef1656VmsbJipzOjMyJmpWJyMyWipuL7_zF656VmsbJipzOjMyJmpWJyMyWipuL.z6dTcv0DeQA16ta47r61tJumxeEN-C6sx7yE7rdMl-y9nvbu8qJxuZFUIZn3-dVWwUhu8yFfhD5aqgHyRGnICw'
+                    IAM_TOKEN = 't1.9euelZqYlsyeisuWkcbMi8-NncqMy-3rnpWai4rKzpOclJLKyZvGzZSbk47l8_d7fl1F-e8ILHgB_t3z9zstW0X57wgseAH-zef1656VmpyKiZ7OnI2PlcjLx5ySy8aY7_zF656VmpyKiZ7OnI2PlcjLx5ySy8aY.WARfVyjNwf7IJ9nUPeTahCTQxzt7EfCQpIop4vvQmyCFqtGYIkkkBUKFNI32T4vdNVrOoRYN9WSinlrLBSerDg'
                     folder_id = 'b1g50fq74ab4fhhng89n'
                     target_language = 'en'
                     body = {
@@ -219,10 +218,12 @@ WHERE id = {id + 1}""").fetchall()
                     data = json.loads(text_inp)  # Преобразование строки JSON в словарь Python
                     text_value = data["translations"][0]["text"]  # Получение значения text
                     print(text_value)
+                    self.outputText.setText(text_value)
                     self.updeter_bd(self.id)
                 except Exception:
                     try:  # Ошибка не в body
-                        IAM_TOKEN = 't1.9euelZqKjZyZlI7PjZeKiYmWk5rHx-3rnpWai4rKzpOclJLKyZvGzZSbk47l8_dDN2NF-e8iJlV9_d3z9wNmYEX57yImVX39zef1656VmsbJipzOjMyJmpWJyMyWipuL7_zF656VmsbJipzOjMyJmpWJyMyWipuL.z6dTcv0DeQA16ta47r61tJumxeEN-C6sx7yE7rdMl-y9nvbu8qJxuZFUIZn3-dVWwUhu8yFfhD5aqgHyRGnICw'
+                        IAM_TOKEN = 't1.9euelZqYlsyeisuWkcbMi8-NncqMy-3rnpWai4rKzpOclJLKyZvGzZSbk47l8_d7fl1F-e8ILHgB_t3z9zstW0X57wgseAH-zef1656VmpyKiZ7OnI2PlcjLx5ySy8aY7_zF656VmpyKiZ7OnI2PlcjLx5ySy8aY.WARfVyjNwf7IJ9nUPeTahCTQxzt7EfCQpIop4vvQmyCFqtGYIkkkBUKFNI32T4vdNVrOoRYN9WSinlrLBSerDg'
+                        folder_id = 'b1g50fq74ab4fhhng89n'
                         headers = {
                             "Content-Type": "application/json",
                             "Authorization": "Bearer {0}".format(IAM_TOKEN)
@@ -234,6 +235,7 @@ WHERE id = {id + 1}""").fetchall()
                         data = json.loads(text_inp)  # Преобразование строки JSON в словарь Python
                         text_value = data["translations"][0]["text"]  # Получение значения text
                         print(text_value)
+                        self.outputText.setText(text_value)
                         self.updeter_bd(self.id)
                     except Exception:
                         print('Fatality Error')
@@ -243,7 +245,7 @@ WHERE id = {id + 1}""").fetchall()
                 print('ошибка системы ищите проблему сами')
                 self.logs.append('ошибка системы ищите проблему сами')
 
-    def enterCom(self, value=[False]):
+    def enterCom(self, value=[None, False]):
         try:
             try:
                 try:
@@ -256,6 +258,7 @@ WHERE id = {id + 1}""").fetchall()
                         self.outputText.setEnabled(True)
                         self.back_function(value[0])
                         self.id = value[0]
+                        self.logs += value[2]
                     else:
                         raise SystemError
                 except SystemError:
@@ -293,6 +296,6 @@ WHERE id = {id + 1}""").fetchall()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    ex = FlagMaker()
+    ex = Translator()
     ex.show()
     sys.exit(app.exec())
