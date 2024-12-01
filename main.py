@@ -7,7 +7,7 @@ from PyQt6 import uic
 import requests
 import sqlite3
 import os
-from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QPixmap, QIcon
 import pyglet
 import json
 from PyQt6.QtCore import Qt
@@ -18,6 +18,40 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QApplication, 
 
 
 # playsound("sound/pukane-4.mp3")
+class Fatality_error(QDialog):
+    def __init__(self):
+        super().__init__()
+        try:
+            try:
+                uic.loadUi('ui/Fatality_EROR.ui', self)
+                self.pushButton: QPushButton
+                self.lineEdit: QLineEdit
+                self.pushButton.clicked.connect(self.smena)
+                self.setWindowTitle('Окно для смены IAM')
+                try:
+                    icon_pixmap = QPixmap('logo/logo.jpg')  # Замените на путь к вашей иконке
+                    icon = QIcon(icon_pixmap)
+                    self.setWindowIcon(icon)
+                except FileNotFoundError:
+                    print('logo не определенно')
+            except FileNotFoundError:
+                print('неприятности с Fatality_EROR.ui')
+        except ValueError:
+            print('ошибка ValueError')
+
+    def smena(self):
+        try:
+            self.close()
+            try:
+                sound = pyglet.media.load('sound/translate_true.mp3', streaming=False)
+                sound.play()
+            except FileNotFoundError:
+                print('проблемы с музыкой музыка не найдена')
+            return self.lineEdit.text()
+        except Exception:
+            print('ошибибка')
+
+
 class Translator(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -36,21 +70,28 @@ class Translator(QMainWindow):
                 self.outputText: QTextEdit
                 self.inputText.setEnabled(False)
                 self.outputText.setEnabled(False)
+                self.setWindowTitle('QT пререводчик')
                 self.translate: QPushButton
                 self.translate.setEnabled(True)
                 self.back: QPushButton
                 self.login_button: QPushButton
                 self.back.setEnabled(False)
-                self.lan1: QComboBox
                 self.lan2: QComboBox
                 self.lan2.setEnabled(False)
-                self.lan1.setEnabled(False)
-                print(self.lan1.currentText())
+                self.smena = False
                 self.free_rr: QLCDNumber
                 self.starter()
                 self.translate.clicked.connect(self.trenslator)
                 self.back.clicked.connect(self.smenter)
                 self.inputText.toPlainText()
+                try:
+                    icon_pixmap = QPixmap('logo/logo.jpg')  # Замените на путь к вашей иконке
+                    icon = QIcon(icon_pixmap)
+                    self.setWindowIcon(icon)
+                except FileNotFoundError:
+                    print('logo не определенно')
+                    self.logs.append('logo не определенно')
+                self.IAM = 't1.9euelZrNl4-SnM6Mi5OOmo-RnZaKye3rnpWai4rKzpOclJLKyZvGzZSbk47l8_cIDU9F-e9pWmJd_N3z90g7TEX572laYl38zef1656VmsuSjYmRxpOMzZuckouPm8rM7_zF656VmsuSjYmRxpOMzZuckouPm8rM.72Ij6KwJ1LvL3OfIW0ImTNToANputc5pGGzlJT1j6kyiGNzf-u9C3H5CulGjovcqb65kWCGIbe2w2FUxmopXAA'
             except SyntaxError:
                 self.logs.append('ошибка синтаксиса начало')
                 print('ошибка синтаксиса')
@@ -60,8 +101,32 @@ class Translator(QMainWindow):
 
     def keyPressEvent(self, event):
         try:
+            if event.key() == Qt.Key.Key_J:
+                try:
+                    sound = pyglet.media.load('sound/pukane-4.mp3', streaming=False)
+                    sound.play()
+                except FileNotFoundError:
+                    print('ошибка музыки музыка не найдена')
+                    self.logs.append('проблемы с музыкой музыка не найдена')
+                self.Fatality_error = Fatality_error()
+                self.Fatality_error.exec()
+                print(self.Fatality_error.smena())
+                self.IAM = self.Fatality_error.smena()
+        except Exception:
+            print('ОШИБКА СМЕНЫ IAM НЕВОЗМОЖНО')
+            self.logs.append('ОШИБКА СМЕНЫ IAM НЕВОЗМОЖНО')
+        try:
             if event.key() == Qt.Key.Key_M:
-                self.statusBar().showMessage(*self.logs)
+                try:
+                    sound = pyglet.media.load('sound/translate_true.mp3', streaming=False)
+                    sound.play()
+                except FileNotFoundError:
+                    print('проблемы с музыкой музыка не найдена')
+                    self.logs.append('проблемы с музыкой музыка не найдена')
+                if len(self.logs) == 0:
+                    self.statusBar().showMessage('Ошибок нет')
+                else:
+                    self.statusBar().showMessage(*self.logs)
         except Exception:
             print('ОШИБКА КОНСОЛИ НЕВОЗМОЖНО')
             self.statusBar().showMessage('ОШИБКА КОНСОЛИ НЕВОЗМОЖНО')
@@ -75,9 +140,6 @@ class Translator(QMainWindow):
             self.logs.append(ValueError)
             print(ValueError)
 
-    def on_combobox_change(self, value):
-        self.label.setText(value)
-
     def back_function(self, id):
         try:
             try:
@@ -85,9 +147,14 @@ class Translator(QMainWindow):
                 cur = con.cursor()
                 result = cur.execute("""SELECT num FROM main""").fetchall()
                 base = [i[0] for i in result]
+                print(base)
+                print(id)
                 num = base[id]
                 print(base)
-                self.updeter(num)
+                if num <= 0:
+                    return True
+                else:
+                    self.updeter(num)
                 con.commit()
                 con.close()
             except SystemError:
@@ -106,72 +173,62 @@ class Translator(QMainWindow):
             print('ошибка updater')
 
     def updeter_bd(self, id):
-        con = sqlite3.connect('bd.sqlite')
-        cur = con.cursor()
-        result = cur.execute(f"""UPDATE main SET num = num - 1
-WHERE id = {id + 1}""").fetchall()
-        con.commit()
-        con.close()
-        self.back_function(id)
+        try:
+            con = sqlite3.connect('bd.sqlite')
+            cur = con.cursor()
+            result = cur.execute(f"""UPDATE main SET num = num - 1
+            WHERE id = {id + 1}""").fetchall()
+            con.commit()
+            con.close()
+            if self.back_function(id):
+                raise ValueError
+        except ValueError:
+            return True
 
-    def trenslator(self, tr='1'):
-        API_KEY = 'ключ'
-        URL = 'https://translate.api.cloud.yandex.net/translate/v2/translate'
-        print(self.inputText.toPlainText().split('\n'))
-        transIn = 'ru'
-        target_language = 'en'
+    def trenslator(self):
         try:
-            if self.lan1.currentText() == 'Англиский':
-                transIn = 'en'
-            elif self.lan1.currentText() == 'Немецкий':
-                transIn = 'de'
-            elif self.lan1.currentText() == 'Французкий':
-                transIn = 'fr'
-            elif self.lan1.currentText() == 'Белорусский':
-                transIn = 'be'
-            elif self.lan1.currentText() == 'Русский':
-                transIn = 'ru'
-        except ValueError as e:
-            self.logs.append('ошибка lan 1')
-            print('ошибка lan 1')
-
-        try:
-            if self.lan2.currentText() == 'Англиский':
-                target_language = 'en'
-            elif self.lan2.currentText() == 'Немецкий':
-                target_language = 'de'
-            elif self.lan2.currentText() == 'Французкий':
-                target_language = 'fr'
-            elif self.lan2.currentText() == 'Белорусский':
-                target_language = 'be'
-            elif self.lan2.currentText() == 'Русский':
-                target_language = 'ru'
-        except ValueError as e:
-            self.logs.append('ошибка lan 2')
-            print('ошибка lan 2')
-        text_to_translate = self.inputText.toPlainText()
-        IAM_TOKEN = 't1.9euelZqYlsyeisuWkcbMi8-NncqMy-3rnpWai4rKzpOclJLKyZvGzZSbk47l8_d7fl1F-e8ILHgB_t3z9zstW0X57wgseAH-zef1656VmpyKiZ7OnI2PlcjLx5ySy8aY7_zF656VmpyKiZ7OnI2PlcjLx5ySy8aY.WARfVyjNwf7IJ9nUPeTahCTQxzt7EfCQpIop4vvQmyCFqtGYIkkkBUKFNI32T4vdNVrOoRYN9WSinlrLBSerDg'
-        folder_id = 'b1g50fq74ab4fhhng89n'
-        body = {
-            "targetLanguageCode": target_language,
-            "texts": text_to_translate,
-            "folderId": folder_id,
-        }
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer {0}".format(IAM_TOKEN)
-        }
-        self.zapros(headers=headers, body=body)
-        # response = requests.post('https://translate.api.cloud.yandex.net/translate/v2/translate',
-        #                          json=body,
-        #                          headers=headers
-        #                          )
-        try:
-            sound = pyglet.media.load('sound/pukane-4.mp3', streaming=False)
-            sound.play()
-        except FileNotFoundError:
-            print('проблемы с музыкой музыка не найдена')
-        pyglet.app.run()
+            print(self.inputText.toPlainText().split('\n'))
+            target_language = 'en'
+            try:
+                if self.lan2.currentText() == 'Англиский':
+                    target_language = 'en'
+                elif self.lan2.currentText() == 'Немецкий':
+                    target_language = 'de'
+                elif self.lan2.currentText() == 'Французкий':
+                    target_language = 'fr'
+                elif self.lan2.currentText() == 'Белорусский':
+                    target_language = 'be'
+                elif self.lan2.currentText() == 'Русский':
+                    target_language = 'ru'
+            except ValueError as e:
+                self.logs.append('ошибка lan 2')
+                print('ошибка lan 2')
+            text_to_translate = self.inputText.toPlainText()
+            IAM_TOKEN = self.IAM
+            folder_id = 'b1g50fq74ab4fhhng89n'
+            body = {
+                "targetLanguageCode": target_language,
+                "texts": text_to_translate,
+                "folderId": folder_id,
+            }
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer {0}".format(IAM_TOKEN)
+            }
+            try:
+                self.zapros(headers=headers, body=body)
+            except ValueError as e:
+                print(e)
+            try:
+                sound = pyglet.media.load('sound/pukane-4.mp3', streaming=False)
+                sound.play()
+            except FileNotFoundError:
+                print('ошибка музыки музыка не найдена')
+                self.logs.append('проблемы с музыкой музыка не найдена')
+            pyglet.app.run()
+        except OSError as e:
+            print('ошибка ', e)
+            self.logs.append('ошибка c системой')
 
     def zapros(self, headers, body):
         try:
@@ -203,7 +260,7 @@ WHERE id = {id + 1}""").fetchall()
         except ValueError:
             try:
                 try:  # ошибка в body
-                    IAM_TOKEN = 't1.9euelZqYlsyeisuWkcbMi8-NncqMy-3rnpWai4rKzpOclJLKyZvGzZSbk47l8_d7fl1F-e8ILHgB_t3z9zstW0X57wgseAH-zef1656VmpyKiZ7OnI2PlcjLx5ySy8aY7_zF656VmpyKiZ7OnI2PlcjLx5ySy8aY.WARfVyjNwf7IJ9nUPeTahCTQxzt7EfCQpIop4vvQmyCFqtGYIkkkBUKFNI32T4vdNVrOoRYN9WSinlrLBSerDg'
+                    IAM_TOKEN = 't1.9euelZrNl4-SnM6Mi5OOmo-RnZaKye3rnpWai4rKzpOclJLKyZvGzZSbk47l8_cIDU9F-e9pWmJd_N3z90g7TEX572laYl38zef1656VmsuSjYmRxpOMzZuckouPm8rM7_zF656VmsuSjYmRxpOMzZuckouPm8rM.72Ij6KwJ1LvL3OfIW0ImTNToANputc5pGGzlJT1j6kyiGNzf-u9C3H5CulGjovcqb65kWCGIbe2w2FUxmopXAA'
                     folder_id = 'b1g50fq74ab4fhhng89n'
                     target_language = 'en'
                     body = {
@@ -219,10 +276,13 @@ WHERE id = {id + 1}""").fetchall()
                     text_value = data["translations"][0]["text"]  # Получение значения text
                     print(text_value)
                     self.outputText.setText(text_value)
-                    self.updeter_bd(self.id)
+                    if self.updeter_bd(self.id):
+                        raise BaseException
+                    else:
+                        self.updeter_bd(self.id)
                 except Exception:
                     try:  # Ошибка не в body
-                        IAM_TOKEN = 't1.9euelZqYlsyeisuWkcbMi8-NncqMy-3rnpWai4rKzpOclJLKyZvGzZSbk47l8_d7fl1F-e8ILHgB_t3z9zstW0X57wgseAH-zef1656VmpyKiZ7OnI2PlcjLx5ySy8aY7_zF656VmpyKiZ7OnI2PlcjLx5ySy8aY.WARfVyjNwf7IJ9nUPeTahCTQxzt7EfCQpIop4vvQmyCFqtGYIkkkBUKFNI32T4vdNVrOoRYN9WSinlrLBSerDg'
+                        IAM_TOKEN = 't1.9euelZrNl4-SnM6Mi5OOmo-RnZaKye3rnpWai4rKzpOclJLKyZvGzZSbk47l8_cIDU9F-e9pWmJd_N3z90g7TEX572laYl38zef1656VmsuSjYmRxpOMzZuckouPm8rM7_zF656VmsuSjYmRxpOMzZuckouPm8rM.72Ij6KwJ1LvL3OfIW0ImTNToANputc5pGGzlJT1j6kyiGNzf-u9C3H5CulGjovcqb65kWCGIbe2w2FUxmopXAA'
                         folder_id = 'b1g50fq74ab4fhhng89n'
                         headers = {
                             "Content-Type": "application/json",
@@ -244,13 +304,13 @@ WHERE id = {id + 1}""").fetchall()
             except OSError:
                 print('ошибка системы ищите проблему сами')
                 self.logs.append('ошибка системы ищите проблему сами')
+                return ValueError('уничтожение')
 
     def enterCom(self, value=[None, False]):
         try:
             try:
                 try:
                     if value[1]:
-                        self.lan1.setEnabled(True)
                         self.lan2.setEnabled(True)
                         self.back.setEnabled(True)
                         self.translate.setEnabled(True)
