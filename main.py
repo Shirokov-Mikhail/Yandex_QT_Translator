@@ -23,7 +23,7 @@ class Fatality_error(QDialog):
         super().__init__()
         try:
             try:
-                uic.loadUi('ui/Fatality_EROR.ui', self)# окно для IAM окна
+                uic.loadUi('ui/Fatality_EROR.ui', self)  # окно для IAM окна
                 self.pushButton: QPushButton
                 self.lineEdit: QLineEdit
                 self.pushButton.clicked.connect(self.smena)
@@ -39,7 +39,7 @@ class Fatality_error(QDialog):
         except ValueError:
             print('ошибка ValueError')
 
-    def smena(self):# окно для IAM окна
+    def smena(self):  # окно для IAM окна
         try:
             self.close()
             try:
@@ -61,7 +61,7 @@ class Translator(QMainWindow):
         try:
             try:
                 try:
-                    uic.loadUi('ui/MainWindow.ui', self)#основное окно
+                    uic.loadUi('ui/MainWindow.ui', self)  # основное окно
                 except FileNotFoundError:
                     self.logs.append('Main файл потерян')
                     print('Main файл потерян')
@@ -70,65 +70,80 @@ class Translator(QMainWindow):
                 self.outputText: QTextEdit
                 self.inputText.setEnabled(False)
                 self.outputText.setEnabled(False)
-                self.setWindowTitle('QT пререводчик')
+
                 self.translate: QPushButton
                 self.translate.setEnabled(True)
+                self.translate.clicked.connect(self.trenslator)  # вызов основной функции перевода
+
+                self.error_log: QPushButton
+                self.error_log.clicked.connect(self.consol)  #кнопка консоли и ошибки в статус бар
+
+                self.sm_IAM: QPushButton
+                self.sm_IAM.clicked.connect(self.IAM_consol)  #Вызов окна для смены токена
+                self.setWindowTitle('QT пререводчик')
+
+                self.lan2: QComboBox
+                self.lan2.setEnabled(False)
+
                 self.back: QPushButton
                 self.login_button: QPushButton
                 self.back.setEnabled(False)
-                self.lan2: QComboBox
-                self.lan2.setEnabled(False)
+                self.back.clicked.connect(self.smenter)  # вызов функции для смены текста в окнах
+
                 self.smena = False
                 self.free_rr: QLCDNumber
                 self.starter()
-                self.translate.clicked.connect(self.trenslator)#вызов основной функции перевода
-                self.back.clicked.connect(self.smenter)#вызов функции для смены текста в окнах
-                self.inputText.toPlainText()
+                self.IAM = ('t1.9euelZqUypWJnIrNycfLnJORxsyMzO3rnpWai4rKzpOclJLKyZvGzZSbk47l8_dpZEhF-e8gSU83_N3z'
+                            '9ykTRkX57yBJTzf8zef1656Vmo2ajZTHj5yRyszMnc-NjImd7_zF656Vmo2ajZTHj5yRyszMnc-NjImd.'
+                            'Yu8vOliB1IQtVg5OeHXYYObNj0HmgUhAKA3S_IHKxZW_x3lw5PJhKobZVPd2PzQkVXQoSzGBYNBob48xo4rOAA')
+                # ^ IAM токен его надо будет поменять
                 try:
-                    icon_pixmap = QPixmap('logo/logo.jpg')  # Замените на путь к вашей иконке
+                    icon_pixmap = QPixmap('logo/logo.jpg')
                     icon = QIcon(icon_pixmap)
                     self.setWindowIcon(icon)
                 except FileNotFoundError:
                     print('logo не определенно')
                     self.logs.append('logo не определенно')
-                self.IAM = 't1.9euelZrNl4-SnM6Mi5OOmo-RnZaKye3rnpWai4rKzpOclJLKyZvGzZSbk47l8_cIDU9F-e9pWmJd_N3z90g7TEX572laYl38zef1656VmsuSjYmRxpOMzZuckouPm8rM7_zF656VmsuSjYmRxpOMzZuckouPm8rM.72Ij6KwJ1LvL3OfIW0ImTNToANputc5pGGzlJT1j6kyiGNzf-u9C3H5CulGjovcqb65kWCGIbe2w2FUxmopXAA'
-                # ^ IAM токен его надо будет поменять
+
             except SyntaxError:
                 self.logs.append('ошибка синтаксиса начало')
                 print('ошибка синтаксиса')
         except ValueError:
             self.logs.append(ValueError)
             print(ValueError)
+    def consol(self):
+        try:
+            sound = pyglet.media.load('sound/translate_true.mp3', streaming=False)
+            sound.play()
+        except FileNotFoundError:
+            print('проблемы с музыкой музыка не найдена')
+            self.logs.append('проблемы с музыкой музыка не найдена')
+        if len(self.logs) == 0:
+            self.statusBar().showMessage('Ошибок нет')
+        else:
+            self.statusBar().showMessage(*self.logs)
 
+    def IAM_consol(self):
+        try:
+            sound = pyglet.media.load('sound/pukane-4.mp3', streaming=False)
+            sound.play()
+        except FileNotFoundError:
+            print('ошибка музыки музыка не найдена')
+            self.logs.append('проблемы с музыкой музыка не найдена')
+        self.Fatality_error = Fatality_error()  # вызов Смены ошибки
+        self.Fatality_error.exec()
+        print(self.Fatality_error.smena())
+        self.IAM = self.Fatality_error.smena()
     def keyPressEvent(self, event):
         try:
             if event.key() == Qt.Key.Key_J:
-                try:
-                    sound = pyglet.media.load('sound/pukane-4.mp3', streaming=False)
-                    sound.play()
-                except FileNotFoundError:
-                    print('ошибка музыки музыка не найдена')
-                    self.logs.append('проблемы с музыкой музыка не найдена')
-                self.Fatality_error = Fatality_error()# вызов основной группы
-                self.Fatality_error.exec()
-                print(self.Fatality_error.smena())
-                self.IAM = self.Fatality_error.smena()
-                # ^ IAM токен его надо будет поменять
+                self.IAM_consol()  #реакция на клики
         except Exception:
             print('ОШИБКА СМЕНЫ IAM НЕВОЗМОЖНО')
             self.logs.append('ОШИБКА СМЕНЫ IAM НЕВОЗМОЖНО')
         try:
             if event.key() == Qt.Key.Key_M:
-                try:
-                    sound = pyglet.media.load('sound/translate_true.mp3', streaming=False)
-                    sound.play()
-                except FileNotFoundError:
-                    print('проблемы с музыкой музыка не найдена')
-                    self.logs.append('проблемы с музыкой музыка не найдена')
-                if len(self.logs) == 0:
-                    self.statusBar().showMessage('Ошибок нет')
-                else:
-                    self.statusBar().showMessage(*self.logs)
+                self.consol() #реакция на клики
         except Exception:
             print('ОШИБКА КОНСОЛИ НЕВОЗМОЖНО')
             self.statusBar().showMessage('ОШИБКА КОНСОЛИ НЕВОЗМОЖНО')
@@ -136,10 +151,10 @@ class Translator(QMainWindow):
     def starter(self):
         try:
             self.second_window = SecondWindow()
-            # вызов друвого окна
+            # вызов стартового окна
             self.second_window.exec()
             self.enterCom(self.second_window.rezelter())
-            #передача результата в функцию инициализации
+            # передача результата в функцию инициализации
         except ValueError as s:
             self.logs.append(ValueError)
             print(ValueError)
@@ -150,11 +165,11 @@ class Translator(QMainWindow):
                 con = sqlite3.connect('bd.sqlite')
                 cur = con.cursor()
                 result = cur.execute("""SELECT num FROM main""").fetchall()
-                #получение числа раз из бд 
+                # получение числа раз из бд
                 base = [i[0] for i in result]
                 print(base)
                 print(id)
-                num = base[id]#по id из SecondWindow
+                num = base[id]  # по id из SecondWindow
                 print(base)
                 if num <= 0:
                     return True
@@ -172,14 +187,14 @@ class Translator(QMainWindow):
 
     def updeter(self, number):
         try:
-            self.free_rr.display(f'{number}')#Функция обновления дисплея
+            self.free_rr.display(f'{number}')  # Функция обновления дисплея
         except Exception:
             self.logs.append('ошибка updater')
             print('ошибка updater')
 
     def updeter_bd(self, id):
         try:
-            con = sqlite3.connect('bd.sqlite')#Функция обновления бд
+            con = sqlite3.connect('bd.sqlite')  # Функция обновления бд
             cur = con.cursor()
             result = cur.execute(f"""UPDATE main SET num = num - 1
             WHERE id = {id + 1}""").fetchall()
@@ -192,8 +207,7 @@ class Translator(QMainWindow):
 
     def trenslator(self):
         try:
-            print(self.inputText.toPlainText().split('\n'))
-            target_language = 'en'
+            target_language = 'en'  #стартовый язык
             try:
                 if self.lan2.currentText() == 'Англиский':
                     target_language = 'en'
@@ -205,28 +219,27 @@ class Translator(QMainWindow):
                     target_language = 'be'
                 elif self.lan2.currentText() == 'Русский':
                     target_language = 'ru'
-            except ValueError as e:
+            except ValueError as e:  #Общий выбор языка
                 self.logs.append('ошибка lan 2')
                 print('ошибка lan 2')
             text_to_translate = self.inputText.toPlainText()
-            IAM_TOKEN = self.IAM
             folder_id = 'b1g50fq74ab4fhhng89n'
             body = {
                 "targetLanguageCode": target_language,
                 "texts": text_to_translate,
                 "folderId": folder_id,
-            }
+            }  #тело запроса код языка текст и id облака на клауде
             headers = {
                 "Content-Type": "application/json",
-                "Authorization": "Bearer {0}".format(IAM_TOKEN)
-            }
+                "Authorization": "Bearer {0}".format(self.IAM)
+            }#подключаем токен
             try:
                 self.zapros(headers=headers, body=body)
             except ValueError as e:
                 print(e)
             try:
                 sound = pyglet.media.load('sound/pukane-4.mp3', streaming=False)
-                sound.play()
+                sound.play()  #МУЗЫЧКА ДААА
             except FileNotFoundError:
                 print('ошибка музыки музыка не найдена')
                 self.logs.append('проблемы с музыкой музыка не найдена')
@@ -240,12 +253,12 @@ class Translator(QMainWindow):
             try:
                 response = requests.post('https://translate.api.cloud.yandex.net/translate/v2/translate',
                                          json=body,
-                                         headers=headers)
+                                         headers=headers)  #сам запрос с url
                 text_inp = str(response.text)  # Преобразуем строку в объект Python
                 data = json.loads(text_inp)  # Преобразование строки JSON в словарь Python
                 text_value = data["translations"][0]["text"]  # Получение значения text
                 self.updeter_bd(self.id)
-                self.outputText.setText(text_value)
+                self.outputText.setText(text_value) # вывод
                 print(text_value)
                 try:
                     sound = pyglet.media.load('sound/translate_true.mp3', streaming=False)
@@ -265,7 +278,9 @@ class Translator(QMainWindow):
         except ValueError:
             try:
                 try:  # ошибка в body
-                    IAM_TOKEN = 't1.9euelZrNl4-SnM6Mi5OOmo-RnZaKye3rnpWai4rKzpOclJLKyZvGzZSbk47l8_cIDU9F-e9pWmJd_N3z90g7TEX572laYl38zef1656VmsuSjYmRxpOMzZuckouPm8rM7_zF656VmsuSjYmRxpOMzZuckouPm8rM.72Ij6KwJ1LvL3OfIW0ImTNToANputc5pGGzlJT1j6kyiGNzf-u9C3H5CulGjovcqb65kWCGIbe2w2FUxmopXAA'
+                    IAM_TOKEN = ('t1.9euelZqUypWJnIrNycfLnJORxsyMzO3rnpWai4rKzpOclJLKyZvGzZSbk47l8_dpZEhF-e8gSU83_N3z'
+                                 '9ykTRkX57yBJTzf8zef1656Vmo2ajZTHj5yRyszMnc-NjImd7_zF656Vmo2ajZTHj5yRyszMnc-NjImd.Yu'
+                                 '8vOliB1IQtVg5OeHXYYObNj0HmgUhAKA3S_IHKxZW_x3lw5PJhKobZVPd2PzQkVXQoSzGBYNBob48xo4rOAA')
                     folder_id = 'b1g50fq74ab4fhhng89n'
                     target_language = 'en'
                     body = {
@@ -287,7 +302,10 @@ class Translator(QMainWindow):
                         self.updeter_bd(self.id)
                 except Exception:
                     try:  # Ошибка не в body
-                        IAM_TOKEN = 't1.9euelZrNl4-SnM6Mi5OOmo-RnZaKye3rnpWai4rKzpOclJLKyZvGzZSbk47l8_cIDU9F-e9pWmJd_N3z90g7TEX572laYl38zef1656VmsuSjYmRxpOMzZuckouPm8rM7_zF656VmsuSjYmRxpOMzZuckouPm8rM.72Ij6KwJ1LvL3OfIW0ImTNToANputc5pGGzlJT1j6kyiGNzf-u9C3H5CulGjovcqb65kWCGIbe2w2FUxmopXAA'
+                        IAM_TOKEN = (
+                            't1.9euelZqUypWJnIrNycfLnJORxsyMzO3rnpWai4rKzpOclJLKyZvGzZSbk47l8_dpZEhF-e8gSU83_N3z'
+                            '9ykTRkX57yBJTzf8zef1656Vmo2ajZTHj5yRyszMnc-NjImd7_zF656Vmo2ajZTHj5yRyszMnc-NjImd.'
+                            'Yu8vOliB1IQtVg5OeHXYYObNj0HmgUhAKA3S_IHKxZW_x3lw5PJhKobZVPd2PzQkVXQoSzGBYNBob48xo4rOAA')
                         folder_id = 'b1g50fq74ab4fhhng89n'
                         headers = {
                             "Content-Type": "application/json",
@@ -316,6 +334,7 @@ class Translator(QMainWindow):
             try:
                 try:
                     if value[1]:
+                        # разблокировка
                         self.lan2.setEnabled(True)
                         self.back.setEnabled(True)
                         self.translate.setEnabled(True)
@@ -324,6 +343,7 @@ class Translator(QMainWindow):
                         self.back_function(value[0])
                         self.id = value[0]
                         self.logs += value[2]
+                        # и перекидка
                     else:
                         raise SystemError
                 except SystemError:
@@ -349,7 +369,7 @@ class Translator(QMainWindow):
                     self.logs.append('проблемы с музыкой музыка не найдена')
 
                 text2 = self.inputText.toPlainText()
-                self.inputText.setText(self.outputText.toPlainText())
+                self.inputText.setText(self.outputText.toPlainText())# менямся текстами
                 self.outputText.setText(text2)
             except SystemError:
                 self.logs.append('System')
