@@ -23,7 +23,7 @@ class Fatality_error(QDialog):
         super().__init__()
         try:
             try:
-                uic.loadUi('ui/Fatality_EROR.ui', self)
+                uic.loadUi('ui/Fatality_EROR.ui', self)# окно для IAM окна
                 self.pushButton: QPushButton
                 self.lineEdit: QLineEdit
                 self.pushButton.clicked.connect(self.smena)
@@ -39,7 +39,7 @@ class Fatality_error(QDialog):
         except ValueError:
             print('ошибка ValueError')
 
-    def smena(self):
+    def smena(self):# окно для IAM окна
         try:
             self.close()
             try:
@@ -61,7 +61,7 @@ class Translator(QMainWindow):
         try:
             try:
                 try:
-                    uic.loadUi('ui/MainWindow.ui', self)
+                    uic.loadUi('ui/MainWindow.ui', self)#основное окно
                 except FileNotFoundError:
                     self.logs.append('Main файл потерян')
                     print('Main файл потерян')
@@ -81,8 +81,8 @@ class Translator(QMainWindow):
                 self.smena = False
                 self.free_rr: QLCDNumber
                 self.starter()
-                self.translate.clicked.connect(self.trenslator)
-                self.back.clicked.connect(self.smenter)
+                self.translate.clicked.connect(self.trenslator)#вызов основной функции перевода
+                self.back.clicked.connect(self.smenter)#вызов функции для смены текста в окнах
                 self.inputText.toPlainText()
                 try:
                     icon_pixmap = QPixmap('logo/logo.jpg')  # Замените на путь к вашей иконке
@@ -92,6 +92,7 @@ class Translator(QMainWindow):
                     print('logo не определенно')
                     self.logs.append('logo не определенно')
                 self.IAM = 't1.9euelZrNl4-SnM6Mi5OOmo-RnZaKye3rnpWai4rKzpOclJLKyZvGzZSbk47l8_cIDU9F-e9pWmJd_N3z90g7TEX572laYl38zef1656VmsuSjYmRxpOMzZuckouPm8rM7_zF656VmsuSjYmRxpOMzZuckouPm8rM.72Ij6KwJ1LvL3OfIW0ImTNToANputc5pGGzlJT1j6kyiGNzf-u9C3H5CulGjovcqb65kWCGIbe2w2FUxmopXAA'
+                # ^ IAM токен его надо будет поменять
             except SyntaxError:
                 self.logs.append('ошибка синтаксиса начало')
                 print('ошибка синтаксиса')
@@ -108,10 +109,11 @@ class Translator(QMainWindow):
                 except FileNotFoundError:
                     print('ошибка музыки музыка не найдена')
                     self.logs.append('проблемы с музыкой музыка не найдена')
-                self.Fatality_error = Fatality_error()
+                self.Fatality_error = Fatality_error()# вызов основной группы
                 self.Fatality_error.exec()
                 print(self.Fatality_error.smena())
                 self.IAM = self.Fatality_error.smena()
+                # ^ IAM токен его надо будет поменять
         except Exception:
             print('ОШИБКА СМЕНЫ IAM НЕВОЗМОЖНО')
             self.logs.append('ОШИБКА СМЕНЫ IAM НЕВОЗМОЖНО')
@@ -134,8 +136,10 @@ class Translator(QMainWindow):
     def starter(self):
         try:
             self.second_window = SecondWindow()
+            # вызов друвого окна
             self.second_window.exec()
             self.enterCom(self.second_window.rezelter())
+            #передача результата в функцию инициализации
         except ValueError as s:
             self.logs.append(ValueError)
             print(ValueError)
@@ -146,10 +150,11 @@ class Translator(QMainWindow):
                 con = sqlite3.connect('bd.sqlite')
                 cur = con.cursor()
                 result = cur.execute("""SELECT num FROM main""").fetchall()
+                #получение числа раз из бд 
                 base = [i[0] for i in result]
                 print(base)
                 print(id)
-                num = base[id]
+                num = base[id]#по id из SecondWindow
                 print(base)
                 if num <= 0:
                     return True
@@ -167,14 +172,14 @@ class Translator(QMainWindow):
 
     def updeter(self, number):
         try:
-            self.free_rr.display(f'{number}')
+            self.free_rr.display(f'{number}')#Функция обновления дисплея
         except Exception:
             self.logs.append('ошибка updater')
             print('ошибка updater')
 
     def updeter_bd(self, id):
         try:
-            con = sqlite3.connect('bd.sqlite')
+            con = sqlite3.connect('bd.sqlite')#Функция обновления бд
             cur = con.cursor()
             result = cur.execute(f"""UPDATE main SET num = num - 1
             WHERE id = {id + 1}""").fetchall()
