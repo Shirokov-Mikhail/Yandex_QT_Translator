@@ -18,6 +18,7 @@ class SecondWindow(QDialog):
         super().__init__()
         try:
             try:
+                #стартовая функция
                 uic.loadUi('ui/Dialog.ui', self)
                 self.pushButton: QPushButton
                 self.pushButton.clicked.connect(self.user_test)
@@ -29,7 +30,8 @@ class SecondWindow(QDialog):
                 self.new_btn.clicked.connect(self.new_user)
                 self.registrator = False
                 self.errorLog = []
-                self.returner = [5, False, self.errorLog]
+                self.returner = [0, False, self.errorLog]  #на 1 месте id в bd потом проверка на закрытие и последние
+                # это ошибки
                 self.setWindowTitle('Вход')
                 try:
                     icon_pixmap = QPixmap('logo/logo.jpg')  # Замените на путь к вашей иконке
@@ -47,9 +49,10 @@ class SecondWindow(QDialog):
 
     def user_test(self):
         try:
-            if self.login.isEnabled() and self.pasword.isEnabled():
+            if self.login.isEnabled() and self.pasword.isEnabled():  # все в штатном положении
                 try:
                     self.get_result('bd.sqlite', self.login.text(), self.pasword.text())
+                    #запрос в большую функцию
                 except FileNotFoundError:
                     print('bd не найдена')
                     self.errorLog.append('bd не найдена')
@@ -70,7 +73,7 @@ class SecondWindow(QDialog):
                 con = sqlite3.connect(name)
                 cur = con.cursor()
                 try:
-                    result = cur.execute("""SELECT name, password FROM main""").fetchall()
+                    result = cur.execute("""SELECT name, password FROM main""").fetchall()#запрос 1
                 except Exception:
                     print('ошибка запроса')
                     self.errorLog.append('ошибка запроса')
@@ -78,9 +81,11 @@ class SecondWindow(QDialog):
                 base_password_id = [i[1] for i in result]
                 try:
                     base_password = [i[0] for i in cur.execute("""SELECT password FROM passwords""").fetchall()]
+                    #запрос 2 для проверки в базе
                     if user in base_users and password in base_password:
                         if base_password_id[base_users.index(user)] - 1 == base_password.index(password):
                             self.returner = [base_users.index(user), True, self.errorLog]
+                            #Вывод по формату и закрытие
                             self.close()
                 except Exception:
                     print('оштбка запроса')
@@ -101,7 +106,7 @@ class SecondWindow(QDialog):
             return [0, False, self.errorLog]
 
     def new_user(self):
-        if self.registrator == False:
+        if self.registrator == False:  #регистрация если первый клик
             try:
                 self.label.setText('Ведите логин для регистрации и нажмите + еще раз')
                 self.label_2.setText('Ведите пароль для регистрации и нажмите + еще раз')
@@ -109,15 +114,19 @@ class SecondWindow(QDialog):
             except Exception:
                 print('ошибка в 1 секторе')
                 self.errorLog.append('ошибка в 1 секторе')
-        else:
+        else: #регистрация если 2 клик
             try:
                 con = sqlite3.connect('bd.sqlite')
                 cur = con.cursor()
                 all_login_id = [int(i[0]) for i in cur.execute("""SELECT id FROM main""").fetchall()]
+                # все логины id
                 all_password_id = [int(i[0]) for i in cur.execute("""SELECT id FROM passwords""").fetchall()]
+                # все пароли id
                 all_logins = [i[0] for i in cur.execute("""SELECT name FROM main""").fetchall()]
+                # все логины
                 all_paswords = [i[0] for i in cur.execute("""SELECT password FROM passwords""").fetchall()]
-                try:
+                # все пароли
+                try: #если кратко проверяем логин проверяем пароль и сохраняем
                     if self.pasword.text() in all_paswords:
                         id = all_paswords.index(self.pasword.text())
                     else:
@@ -135,7 +144,6 @@ class SecondWindow(QDialog):
                         new_login = f"""INSERT INTO main VALUES ({max(all_login_id) + 1},'{self.login.text()}', {id}, 5)
                                                              """
                         cur.execute(new_login)
-
                 except Exception:
                     print('ошибка в login')
                     self.errorLog.append('ошибка в login при регистрации')
