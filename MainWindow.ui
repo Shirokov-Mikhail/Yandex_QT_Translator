@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>579</width>
-    <height>665</height>
+    <height>651</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0" colspan="2">
+    <item row="0" column="0">
      <widget class="QLabel" name="name">
       <property name="font">
        <font>
@@ -23,20 +23,11 @@
        </font>
       </property>
       <property name="text">
-       <string>Осталось попыток</string>
+       <string>Цель</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QLCDNumber" name="free_rr">
-      <property name="font">
-       <font>
-        <pointsize>16</pointsize>
-       </font>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="3">
+    <item row="0" column="1">
      <widget class="QComboBox" name="lan2">
       <property name="font">
        <font>
@@ -45,27 +36,12 @@
       </property>
       <item>
        <property name="text">
-        <string>Русский</string>
+        <string>YaGPT-Lite</string>
        </property>
       </item>
       <item>
        <property name="text">
-        <string>Белорусский</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Англиский</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Немецкий</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>Французкий</string>
+        <string>YaGPT-Pro</string>
        </property>
       </item>
      </widget>
@@ -86,22 +62,10 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="1" column="1" colspan="2">
-     <widget class="QPushButton" name="back">
-      <property name="font">
-       <font>
-        <pointsize>26</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>&lt;&gt;</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="3">
+    <item row="1" column="1">
      <widget class="QTextEdit" name="outputText">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <property name="font">
        <font>
@@ -117,15 +81,15 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </item>
-    <item row="2" column="0" colspan="4">
-     <widget class="QPushButton" name="translate">
+    <item row="2" column="0" colspan="2">
+     <widget class="QPushButton" name="button">
       <property name="font">
        <font>
         <pointsize>26</pointsize>
        </font>
       </property>
       <property name="text">
-       <string>Перевести</string>
+       <string>Отправить</string>
       </property>
      </widget>
     </item>
