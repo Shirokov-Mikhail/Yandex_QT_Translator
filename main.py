@@ -10,7 +10,7 @@ from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QApplication, 
 
 # playsound("sound/pukane-4.mp3")
 
-
+# 123
 class Translator(QMainWindow):
     def __init__(self):
         super().__init__()
